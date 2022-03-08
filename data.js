@@ -3,6 +3,9 @@ const mongodb = require('mongodb');
 const ObjectId = require('mongodb').ObjectID;
 
 module.exports = {
+    config: function(success) {
+        getConfig(success)
+    }, 
     save: function (data, callback) {
         //console.log("Save in collection " + collection);
         save(data, callback);
@@ -22,6 +25,11 @@ client = null;
 DB_URI =  "mongodb+srv://%s:%s@%s/?retryWrites=true&w=majority"
 db_name = 'todos'
 collection = 'tasks'
+
+function getConfig(success) {
+    const env = process.env;
+    success(env)
+}
 
 function getClient(callback) {
     if (client != null) {
