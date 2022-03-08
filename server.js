@@ -3,6 +3,8 @@ const routes = require("./routes");
 
 // App
 const app = express();
+app.use(express.json())
+
 
 // Set port
 const port = process.env.PORT || "1337";
