@@ -3,3 +3,5 @@ node_modules/
 # jetbrain IDE files
 .idea/
 .circleci_bk
+.env
+package-lock.json

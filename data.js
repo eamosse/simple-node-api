@@ -36,12 +36,14 @@ function getClient(callback) {
         callback(client);
         return;
     }
+    const env = process.env;
 
-    const DATABASE_URI = util.format(DB_URI, 'root', 'bbiaPUH79IIIgKwj', 'course.ue7xa.mongodb.net')
+    const DATABASE_URI = util.format(DB_URI, env.MONGO_USER, env.MONGO_PWD, env.MONGO_URI)
+    console.log("URI is", DATABASE_URI)
     mongodb.connect(DATABASE_URI, function (err, c) {
         if (err) {
-            callback(null);
             console.log(err);
+            callback(null);
         }
         else {
             console.log("Initializing a new connection to mongodb...")

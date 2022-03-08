@@ -4,12 +4,6 @@ const data = require("./data")
 
 const router = express.Router();
 
-router.get("/config", function(req, res) {
-  data.config((data)=>{
-    res.json(data);
-  })
-});
-
 router.get("/todos", function(req, res) {
   data.all((data)=>{
     res.json(data);
