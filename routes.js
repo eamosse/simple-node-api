@@ -13,18 +13,14 @@ router.get("/todos", function(req, res) {
 });
 
 router.post("/todos", function(req, res) {
-  data.save(req.body, (data)=>{
-    res.json({
-      'status': 'OK'
-    });
+  data.save(req.body, (result)=>{
+    res.json(result);
   })
 });
 
 router.put("/todos/:id/status/:status", function(req, res) {
-  data.complete(req.params.id, req.params.status, (data)=>{
-    res.json({
-      'status': 'OK'
-    });
+  data.complete(req.params.id, req.params.status, (result)=>{
+    res.json(result);
   })
 });
 

@@ -60,7 +60,10 @@ function all(success, error) {
             .find({}, {})
             .toArray(function (err, items) {
                 if (err) {
-                    error(err);
+                    error({
+                        'status': "KO",
+                        'reeason': err
+                    })
                 } else {
                     success(items);
                 }
@@ -70,11 +73,21 @@ function all(success, error) {
 
 function save(data, callback) {
     console.log(data)
+    delete data["_id"]
     getClient(async (client) => {
         let db = client.db(db_name);
         db.collection(collection).insertOne(data, function (error, result) {
-            console.log(error)
-            callback(error, result);
+            if (error) {
+                callback({
+                    'status': "KO",
+                    'reeason': error
+                })
+            }else {
+                callback({
+                    'status': "OK",
+                    'message': "La tâche a été créée"
+                })
+            }
         });
     });
 }
@@ -84,16 +97,22 @@ function complete(id, status, callback) {
         const db = client.db(db_name);
         const options = { upsert: false };
 
-        const result = await db.collection(collection).updateOne({
-            "_id": new ObjectId(id)
-        }, 
-        {
-         $set:{
-            'completed': parseInt(status) == 1
+        try {
+            const result = await db.collection(collection).updateOne({
+                "_id": new ObjectId(id)
+            }, 
+            {
+             $set:{
+                'completed': parseInt(status) == 1
+            }
+            }, options);
+            callback(result);
+        } catch (error) {
+            callback({
+                'status': "KO",
+                'reeason': error
+            })
         }
-        }, options);
-        
-        callback(result);
     });
 }
 
@@ -101,13 +120,22 @@ function remove(id, callback) {
     getClient(async (client) => {
         const db = client.db(db_name);
 
-        const result = await db.collection(collection).deleteOne(
-            {
-                "_id": new ObjectId(id)
-            }
-        );
+        try {
+            const result = await db.collection(collection).deleteOne(
+                {
+                    "_id": new ObjectId(id)
+                }
+            );
+            callback(result);
+            
+        } catch (error) {
+            callback({
+                'status': "KO",
+                'reeason': error
+            })
+        }
 
-        callback(result);
+       
     });
 
 }
