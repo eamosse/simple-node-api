@@ -1,5 +1,6 @@
 const util = require('util')
 const mongodb = require('mongodb');
+const moment = require('moment');
 const ObjectId = require('mongodb').ObjectID;
 
 module.exports = {
@@ -55,6 +56,14 @@ function getClient(callback) {
 
 function all(success, error) {
     getClient((client) => {
+        if (!client) {
+            callback({
+                'status': 'KO', 
+                'message': 'Fail to connect to the database'
+            })
+
+            return;
+        }
         let db = client.db(db_name);
          db.collection(collection)
             .find({}, {})
@@ -74,7 +83,17 @@ function all(success, error) {
 function save(data, callback) {
     console.log(data)
     delete data["_id"]
+    data['created_at'] = moment().format("yyyy-mm-dd hh:mn:ss")
     getClient(async (client) => {
+        if (!client) {
+            callback({
+                'status': 'KO', 
+                'message': 'Fail to connect to the database'
+            })
+
+            return;
+        }
+
         let db = client.db(db_name);
         db.collection(collection).insertOne(data, function (error, result) {
             if (error) {
@@ -94,6 +113,14 @@ function save(data, callback) {
 
 function complete(id, status, callback) {
     getClient(async (client) => {
+        if (!client) {
+            callback({
+                'status': 'KO', 
+                'message': 'Fail to connect to the database'
+            })
+
+            return;
+        }
         const db = client.db(db_name);
         const options = { upsert: false };
 
@@ -103,10 +130,14 @@ function complete(id, status, callback) {
             }, 
             {
              $set:{
-                'completed': parseInt(status) == 1
+                'completed': parseInt(status) == 1, 
+                'last_uptaed': moment().format("yyyy-mm-dd hh:mn:ss")
             }
             }, options);
-            callback(result);
+            callback({
+                'status': 'OK', 
+                'message' : 'La tâche a été mise à jour'
+            });
         } catch (error) {
             callback({
                 'status': "KO",
@@ -118,6 +149,15 @@ function complete(id, status, callback) {
 
 function remove(id, callback) {
     getClient(async (client) => {
+        if (!client) {
+            callback({
+                'status': 'KO', 
+                'message': 'Fail to connect to the database'
+            })
+
+            return;
+        }
+
         const db = client.db(db_name);
 
         try {
@@ -126,7 +166,9 @@ function remove(id, callback) {
                     "_id": new ObjectId(id)
                 }
             );
-            callback(result);
+            callback({
+                'status': 'OK'
+            });
             
         } catch (error) {
             callback({
@@ -134,7 +176,6 @@ function remove(id, callback) {
                 'reeason': error
             })
         }
-
        
     });
 
