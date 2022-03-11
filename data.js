@@ -84,6 +84,8 @@ function save(data, callback) {
     console.log(data)
     delete data["_id"]
     data['created_at'] = moment().format("YYYY-MM-DD HH:mm:ss")
+    data['last_updated'] = moment().format("YYYY-MM-DD HH:mm:ss")
+
     getClient(async (client) => {
         if (!client) {
             callback({
@@ -131,7 +133,7 @@ function complete(id, status, callback) {
             {
              $set:{
                 'completed': parseInt(status) == 1, 
-                'last_uptaed': moment().format("YYYY-MM-DD HH:mm:ss")
+                'last_updated': moment().format("YYYY-MM-DD HH:mm:ss")
             }
             }, options);
             callback({
